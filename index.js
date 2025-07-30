@@ -14,7 +14,31 @@ app.post('/', async (req, res) => {
   let responseText = "";
   let buttons = [];
 
-  if (msg.includes("devolver") || msg.includes("troca")) {
+  const palavrasDevolucao = ["devolver", "quero devolver", "devolução", "troca", "quero trocar"];
+  const palavrasNaoServiu = ["não serviu", "tamanho errado", "ficou pequeno", "ficou grande"];
+  const palavrasDefeito = ["defeito", "estragado", "com problema", "danificado"];
+  const palavrasErrado = ["recebi errado", "produto errado", "pedido errado"];
+  const palavrasAtendente = ["falar com atendente", "humano", "ajuda humana", "atendente"];
+
+  if (palavrasDevolucao.some(p => msg.includes(p))) {
+    responseText = `Para devolver seu pedido pelo Mercado Livre, siga esses passos:
+
+1. Entre em *Compras* e escolha o pedido.
+2. Clique em *Me arrependi / Não quero mais*.
+3. Responda um questionário rápido (diga que o item está em bom estado ou não foi usado).
+4. A plataforma gera uma etiqueta em PDF ou QR Code para postar nos Correios ou ponto de coleta.
+5. Seu dinheiro será estornado automaticamente.
+
+📦 Caso precise de ajuda com isso, é só responder aqui!`;
+  } else if (palavrasNaoServiu.some(p => msg.includes(p))) {
+    responseText = "Sem problemas! Você pode nos devolver o produto e solicitar outro tamanho pelo Mercado Livre.";
+  } else if (palavrasDefeito.some(p => msg.includes(p))) {
+    responseText = "Sinto muito por isso. Vamos agilizar a troca! Envie fotos do defeito para analisarmos.";
+  } else if (palavrasErrado.some(p => msg.includes(p))) {
+    responseText = "Ops! Nos envie fotos do que recebeu e o número do pedido para resolvermos o quanto antes.";
+  } else if (palavrasAtendente.some(p => msg.includes(p))) {
+    responseText = "Encaminhando você para um atendente. Aguarde, por favor.";
+  } else {
     responseText = "Olá! Aqui é o *Time de Pós-Venda Mercado Livre* 👋\nPor favor, selecione o motivo da devolução:";
     buttons = [
       "Não serviu",
@@ -22,20 +46,10 @@ app.post('/', async (req, res) => {
       "Recebi errado",
       "Falar com atendente"
     ];
-  } else if (msg.includes("não serviu")) {
-    responseText = "Sem problemas! Você pode nos devolver o produto e solicitar outro tamanho pelo Mercado Livre.";
-  } else if (msg.includes("defeito")) {
-    responseText = "Sinto muito por isso. Vamos agilizar a troca! Envie fotos do defeito para analisarmos.";
-  } else if (msg.includes("recebi errado")) {
-    responseText = "Ops! Nos envie fotos do que recebeu e o número do pedido para resolvermos o quanto antes.";
-  } else if (msg.includes("atendente")) {
-    responseText = "Encaminhando você para um atendente. Aguarde, por favor.";
-  } else {
-    responseText = "Olá! Para devolver um produto, digite: 'quero devolver'.";
   }
 
   try {
-    await axios.post('https://api.z-api.io/instance000000/token000000/send-buttons', {
+    await axios.post('https://api.z-api.io/instances/3E4C6D7C1AD460C579F69E6774402775/token/82B75EA8603E8D55BDCA8203/send-buttons', {
       phone: phone,
       message: responseText,
       options: buttons
